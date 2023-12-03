@@ -15,6 +15,12 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.preprocessing import normalize
 from tqdm.auto import tqdm
 
+from sklearn.ensemble import RandomForestRegressor
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from sklearn.model_selection import KFold
+from sklearn import metrics
 from itertools import combinations
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.gaussian_process import GaussianProcessRegressor
@@ -41,26 +47,17 @@ predictors = ['a1-2','a3','a4','a5','a6','a7','a8','a9','a10','a11','a12']
 X = dataset[predictors].values
 y = dataset[targetvariable].values
 
-#Split the data into training and testing set
-from sklearn.model_selection import train_test_split
-#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
-
 ###### Random Forest Regression in Python #######
-from sklearn.ensemble import RandomForestRegressor
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-from sklearn.model_selection import KFold
 
-#Train everything together#
-#RegModel = RandomForestRegressor(n_estimators=100,criterion='friedman_mse',random_state=4277)
-krr = KernelRidge(alpha=1.0)
-KRR=krr.fit(X,y)
-#predictions_all = np.array([tree.predict(X) for tree in RegModel.estimators_])
+rf = RandomForestRegressor(n_estimators=100,criterion='friedman_mse',random_state=4277)
 
+predictions_all = np.array([tree.predict(X) for tree in rf.estimators_])
+RF=rf.fit(X,y)
+DF = pd.DataFrame(RF.predict(X))
+DF.to_csv("predicted_RF.csv")
 
 #Measuring Goodness of fit in Training data
-from sklearn import metrics
+
 
 #Plotting the feature importance for Top 10 most important columns
 
@@ -71,6 +68,11 @@ from sklearn import metrics
 
 #yplot = RF.predict(X[14:])
 #xplot = y[14:]
+
+
+#KRR#
+krr = KernelRidge(alpha=1.0)
+KRR=krr.fit(X,y)
 DF = pd.DataFrame(KRR.predict(X))
 DF.to_csv("predicted_KR.csv")
 
